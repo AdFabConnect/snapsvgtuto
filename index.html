@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Démonstration Snap</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="css/main.css">
+        <script src="js/vendor/snap.svg-min.js"></script>
+        <script>
+        	window.onload = function () {
+        		var w = 400,
+                    h = 400,
+                    s = Snap(w,h);
+                
+                var circle = s.circle(100,100,50);
+                circle.attr({
+                  fill:'#fff',
+                  stroke:'#f4f4f4',
+                  strokeWidth : 10 
+                });
+                
+                var circleClone = circle.clone().attr({cx: 250}),
+                    ellipse = s.ellipse(100, 100, 10, 15),
+                    eyes = s.g(ellipse,ellipse.clone().attr({cx: 250})),
+                    glasses = s.g(circle,circleClone, eyes);
+                    basicLine = {
+                        strokeWidth: 10,
+                        stroke:'#000',
+                        fill : 'none'
+                    };
+                
+                circle.before(s.path('M 150 110 q 27 -35 50 0').attr(basicLine));               
+                
+                
+                Snap.load('mustach.svg', function(f){
+                    var m = f.select('path');
+                    var mLeft = m.clone();
+                    var mRight = m.transform('s-1,1');
+                    var mWidth = Math.floor(mLeft.getBBox().width);
+                    
+                    var t = new Snap.Matrix();
+                    t.translate(-mWidth, 0);
+                    mLeft.transform(t);
+                    
+                    var mustach = s.g(mLeft,mRight).transform('translate(160,175)');
+                    mustach.attr({fill: "l(0,0,1,1)#fff-#000"});
+                    
+                    var onmove = function(dx, dy){
+                      dx = dx + 160;
+                      dy = dy + 175;
+                      this.transform('t'+dx+','+dy);
+                    };
+                    
+                    var grow = 1;
+                    var onend = function(){
+                      this.animate({transform: 't160,175'}, 200, function(){
+                        mustach.animate({transform: '...r360'}, 500);
+                        grow++;
+                        if(grow == 4)
+                          grow  = 1;
+                        
+                        eyes.animate({transform: 's1,'+grow }, 500);
+                      });       
+                    };
+                    
+                    
+                    
+                    mustach.drag(onmove, function(){}, onend);
+                 });
+
+        	};
+        	
+        	
+        </script>
+    </head>
+    <body>
+
+    </body>
+</html>
